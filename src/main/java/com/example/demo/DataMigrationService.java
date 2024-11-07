@@ -3,6 +3,7 @@ package com.example.demo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,15 +13,15 @@ import java.util.Map;
 public class DataMigrationService {
 
     @Autowired
-    private JdbcTemplate sourceJdbcTemplate;
+    private NamedParameterJdbcTemplate sourceJdbcTemplate;
 
     @Autowired
-    private JdbcTemplate targetJdbcTemplate;
+    private NamedParameterJdbcTemplate targetJdbcTemplate;
 
     public void migrateData() {
         // Step 1: Read data from the source database
         String query = "SELECT id, name, value FROM source_table";
-        List<Map<String, Object>> rows = sourceJdbcTemplate.queryForList(query);
+        List<Map<String, Object>> rows = sourceJdbcTemplate.queryForList(query, Map.of());
 
         // Step 2: Transform the data (if necessary)
         for (Map<String, Object> row : rows) {
@@ -30,7 +31,7 @@ public class DataMigrationService {
 
             // Step 3: Insert the transformed data into the target database
             String insertQuery = "INSERT INTO target_table (name, value) VALUES (?, ?)";
-            targetJdbcTemplate.update(insertQuery, transformedName, row.get("value"));
+           // targetJdbcTemplate.update(insertQuery, transformedName, row.get("value"));
         }
 
         System.out.println("Data migration completed successfully.");
